@@ -3,6 +3,7 @@ import BookList from './BookList'
 import BookDetails from './BookDetails'
 import BookForm from './BookForm'
 import BookUpdate from './BookUpdate'
+import BookDelete from './BookDelete'
 import './App.css'
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
   const [bookUpdate, setBookUpdate] = useState('')
   const [confirmation, setConfirmation] = useState('')
   const [confirmUpdate, setConfirmUpdate] = useState('')
+  const [confirmDelete, setConfirmDelete] = useState('')
 
   useEffect(() => {
     fetch('http://localhost:3000/books')
@@ -59,6 +61,17 @@ function App() {
       .catch((err) => setConfirmUpdate('Não foi possível atualizar o livro: ' + err.message))
   }
 
+  const handleBookDelete = (bookId) => {
+    fetch(`http://localhost:3000/books/${bookId}`, {
+      method: 'DELETE',
+    })
+      .then((res) => updateOk(res))
+      .then((data) => {
+        setConfirmDelete('Livro excluído com sucesso!');
+      })
+      .catch((err) => setConfirmDelete('Não foi possível excluir o livro: ' + err.message))
+  }
+
   return (
     <>
       <div>
@@ -78,6 +91,8 @@ function App() {
         <p>{confirmation}</p>
         <BookUpdate fidUpdate={setBookUpdate} onBookUpdate={handleBookUpdate} />
         <p>{confirmUpdate}</p>
+        <BookDelete onDeleteBook={handleBookDelete} />
+        <p>{confirmDelete}</p>
       </div>
     </>
   );
