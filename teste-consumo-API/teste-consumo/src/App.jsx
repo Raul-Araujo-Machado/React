@@ -8,6 +8,7 @@ import './App.css'
 function App() {
   const [books, setBooks] = useState([])
   const [bookId, setBookId] = useState('')
+  const [bookUpdate, setBookUpdate] = useState('')
   const [confirmation, setConfirmation] = useState('')
   const [confirmUpdate, setConfirmUpdate] = useState('')
 
@@ -17,6 +18,12 @@ function App() {
       .then((data) => setBooks(data));
   }, []);
 
+  const updateOk = (res) => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error('Não foi possível realizar a operação: ' + res.status + ' ' + res.statusText);
+  }
 
   const handleBookSubmit = (newBook) => {
     fetch('http://localhost:3000/books' , {
@@ -32,6 +39,24 @@ function App() {
         setConfirmation('Livro adicionado com sucesso!');
       })
       .catch((err) => setConfirmation('Não foi possível adicionar o livro!'))
+  }
+
+  const handleBookUpdate = (newBook) => {
+    console.log('id antes do fetch:' + newBook['id']);
+    const bookData = { id: newBook['id'], ...newBook };
+    
+    fetch(`http://localhost:3000/books/${newBook['id']}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bookData),
+    })
+      .then((res) => updateOk(res))
+      .then((data) => {
+        setConfirmUpdate('Livro atualizado com sucesso!');
+      })
+      .catch((err) => setConfirmUpdate('Não foi possível atualizar o livro: ' + err.message))
   }
 
   return (
@@ -51,7 +76,7 @@ function App() {
         <BookDetails bookId={bookId} />
         <BookForm onBookSubmit={handleBookSubmit} />
         <p>{confirmation}</p>
-        <BookUpdate onBookUpdate={setConfirmUpdate} />
+        <BookUpdate fidUpdate={setBookUpdate} onBookUpdate={handleBookUpdate} />
         <p>{confirmUpdate}</p>
       </div>
     </>

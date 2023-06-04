@@ -5,30 +5,28 @@ const BookUpdate = ({ onBookUpdate }) => {
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         
         if(title.trim() === "" || author.trim() === ""){
             return;
         }
         const newBook = {
+            id: id.trim(),
             title: title.trim(),
             author: author.trim()
         }
+        console.log('idnewbook: ' + newBook);
+        console.log('fid:' + id); 
 
-        const res = await fetch(`http://localhost:3000/books/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newBook),
-        })
-        if(res.ok){
-            onBookUpdate('Livro atualizado com sucesso!');
+        try {
+            onBookUpdate(newBook);
             setId("");
             setTitle("");
             setAuthor("");
-        }
+        } catch (error) {
+            console.error("Erro ao atualizar o livro:", error);
+        };
     }
 
     return (
